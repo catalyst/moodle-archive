@@ -1749,7 +1749,11 @@ function upgrade_plugin_mnet_functions($component) {
                 $dataobject->classname     = $method['classname'];
                 $dataobject->filename      = $method['filename'];
             }
-            $dataobject->xmlrpcpath = $type.'/'.$plugin.'/'.$dataobject->filename.'/'.$method;
+            $xmlrpcpath = $path;
+            if (strstr($xmlrpcpath, $CFG->dirroot) == 0) {
+                $xmlrpcpath = substr($xmlrpcpath, strlen($CFG->dirroot) + 1);
+            }
+            $dataobject->xmlrpcpath = $xmlrpcpath.'/'.$dataobject->filename.'/'.$method;
             $dataobject->static = false;
 
             require_once($path . '/' . $dataobject->filename);

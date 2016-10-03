@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Reveal Presentation Template - Catalyst</title>
+
+		<meta name="author" content="Catalyst">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/catalyst.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<!-- <link rel="stylesheet" href="lib/css/zenburn.css"> -->
+		<link rel="stylesheet" href="lib/css/catalyst-syntax.css">
+
+		<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+		<script>
+			if( window.location.search.match( /print-pdf/gi ) ) {
+				var link = document.createElement( 'link' );
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = 'css/print/pdf.css';
+				document.getElementsByTagName( 'head' )[0].appendChild( link );
+			}
+		</script>
+
+		<style>
+			/* Add the ability to omit slides from the printed version (has to be after the print include)*/
+			@media print {
+				.reveal .slides section.no-print {
+					display: none !important;
+					visibility: hidden !important;
+				}
+			}
+		</style>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+
+		<!-- Please put any custom styles here -->
+		<style>
+
+		</style>
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<!-- Cover slide -->
+				<section data-markdown>
+					<script type="text/template">
+					### Git, SSL, Behat and GoCD, moving towards a more stable and secure Moodle installation
+					# Catalyst <!-- .element: class="catalyst-logo" -->
+					Presented by <!-- .element: class="small-text" --> [Francis Devine & Nikki Sinclair](Link) <!-- .element: class="small-text" -->
+					</script>
+				</section>
+
+				<!-- Slide with a large title-->
+				<section data-markdown>
+					<script type="text/template">
+					## Agenda/Rundown
+					Cover a mix of technologies we use to provide moodle sites
+					The first half of the presentation:
+					Git
+					SSL/Lets Encrypt
+					GoCD
+					Second half, including hands on:
+					Behat
+					Note:
+					Idea with the first half is to provide a basic introduction to the capabilities
+					of these technologies and explain their pros/cons and tradeoffs and how we ultilise them to improve uptime and security
+
+					for example it will not make you a git expert overnight and isnt intended to be a full primer to git
+
+					the git and lets encrypt/ssl discussions will also include some short demos to give a taste of their use in practice
+
+					would very much like for there to be a discussion/interaction around each of these technologies, so welcome questions
+
+					The second half is a more hands on presentation with behat as a taste of how to do automated testing of your site
+					</script>
+				</section>
+
+				<!-- Large image slide -->
+				<section data-markdown class="image-slide">
+					<script type="text/template">
+						## Git
+						![placeholder image](img/git-small.png "Git")
+
+						xkcd.com/1597/
+						Note:
+						So our first topic of discussion is git, what is git?
+
+						It's software that tracks changes to text files
+
+						usually software, but can actually be any plain text, a research paper, a book etc
+
+						it's designed for both use by individuals working alone and teams
+
+						very useful in both scenarios
+
+						bundles metadata that indicates intent of change
+					</script>
+				</section>
+
+				<!-- Large image slide -->
+				<section data-markdown class="image-slide">
+					<script type="text/template">
+						## Why git?
+						![version control mark 1](img/vcontrol.png "Version Control mk1")
+						Note:
+						Well then why git
+
+						you want easy way to rollback
+
+						you want an easy way to manage any modifications
+
+						you might have multiple people working on moodle
+
+						how do you reconcile all these
+
+						ensure changes aren't lost
+
+						and not trapped on old versions
+
+						we think git helps to manage these pressures in a sane fashion
+
+						no need to store 25 copies of the site
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+						## Demo of the basics
+						Note:
+
+						things to cover
+
+						git init
+
+						git add commit
+
+						git branch
+
+						git merge
+
+						working with multiple remotes
+					</script>
+				</section>
+
+				<!-- Large image slide -->
+				<section data-markdown class="image-slide">
+					<script type="text/template">
+						## Git Hosting
+						![placeholder image](img/vcontrol.png "Version Control mk1")
+						Note:
+						as I have shown in the demos you need a remote server to host your git instance
+
+						there are existing businesses who will provide
+
+						advantages: are uptime, stability, security + ease of use
+
+						downsides: pricing structures, limitations around pricing
+
+						Github is the first and largest, but private repos cost
+
+						Gitlab.com is a newer player, free private repos but max disk (generous)
+
+						Bit bucket is owned by Atlassian, free private repos, limit to max users
+					</script>
+				</section>
+
+				<!-- Large image slide -->
+				<section data-markdown class="image-slide">
+					<script type="text/template">
+						## Self hosted options
+						![placeholder image](img/vcontrol.png "Version Control mk1")
+						Note:
+						you have to maintain and ensure uptime
+
+						easier for internal servers to reach, no firewalling issues
+
+						can integrate with existing identity management
+
+						flexibility, do not bundle issue tracking/wiki etc
+
+						unlimited usage (only hardware cost)
+
+						you have full control, but it requires engineering investment
+
+					</script>
+				</section>
+
+				<!-- Large image slide -->
+				<section data-markdown class="image-slide">
+					<script type="text/template">
+						## Git Gotchas
+						###(Code)
+						![placeholder image](img/vcontrol.png "Version Control mk1")
+						Note:
+						git does not validate changes are correct, it only conflicts
+						when the lines have changed, this means git will happily report
+						a successful merge on code that doesn't work.
+
+						This isn't a bug, as git is not designed to be a code validation tool
+
+						consider the case where  your code is a function hook into core
+						and the internal workings/return type of that function changes in core
+						git won't notice
+
+						again, git is not a validation tool, it's intended to help you manage changes against
+						someone elses codebase and also ensure that your own code is not lost
+
+						unit testing + functional testing will assist here, both behat and phpunit
+						as well as doing simple sanity checks in your own browser
+
+						reviewing the change diffs when doing merges between versions is also important
+					</script>
+				</section>
+
+				<!-- Large image slide -->
+				<section data-markdown class="image-slide">
+					<script type="text/template">
+						## Git Gotchas II
+						### (Config)
+						![placeholder image](img/vcontrol.png "Version Control mk1")
+						Note:
+						if you store configuration paths in git (say in the config.php)
+						git will happily overwrite the paths or other settings if the changes
+						are made after production config was set
+
+						*demo*
+
+						for config especially use the moodle database where possible, another option is
+						tie a seperate step into your deployment proccess that adds the config options to the moodle
+						config file, source could be a db or a file
+					</script>
+				</section>
+
+				<!-- Large image slide -->
+				<section data-markdown class="image-slide">
+					<script type="text/template">
+						# Questions
+						Note:
+					</script>
+				</section>
+
+				<!-- Large image slide -->
+				<section data-markdown class="image-slide">
+					<script type="text/template">
+						## https/SSL
+						!["SSL Handshake"](img/sslgreen.png)
+						Note:
+						the web runs on http, protocol for transferring data over a network
+
+						https is a version of this with the data encrypted between client and server
+
+					</script>
+				</section>
+
+				<!-- Large image slide -->
+				<section data-markdown class="image-slide">
+					<script type="text/template">
+						## Why https?
+						!["SSL Handshake"](img/sslgreen.png)
+						Note:
+						why? to prevent attackers on the network between you and the client from
+						reading the messages
+
+						they could steal your admin session cookie and pretend to be you, or sniff your
+						credentials as you login
+
+					</script>
+				</section>
+
+
+				<section data-markdown class="image-slide">
+					<script type="text/template">
+						## Handshake/brief overview
+						!["SSL Handshake"](img/sslshake.png)
+						Note:
+						very briefly from a technical point of view, client requests webpage
+						server responds with hello and cert, client negotiates encryption protocol
+						then can speak to each other without listeners in
+
+						key takeaway, server sends cert back, which raises the question, how do you
+						know it was the client cert?
+
+					</script>
+				</section>
+
+				<section data-markdown class="image-slide">
+					<script type="text/template">
+						## CA trust model
+						!["Basic CA trust model"](img/trust.jpg)
+						Note:
+						As a certified entititie we get our own certificate signed by
+						an intermediate CA, and they in turn are signed by the root CA
+
+						how are the root CAs trusted? Added manually to the trust store of
+						a browser by the vendor, requires auditing and significant investment
+
+						you may have heard of some of the standard CAs, rapidssl, comodo etc
+
+						this process usually costs money
+					</script>
+				</section>
+
+				<section data-markdown class="image-slide">
+					<script type="text/template">
+						## Lets Encrypt
+						!["Basic CA trust model"](img/lelogo)
+						Note:
+						Issues free certificates for anyone who can prove they own a domain
+
+						non profit entity from the US, with coporate and private sponsorship
+
+						Most importantly however, they do so in a way that makes it easy to automate
+                        this means we can easily issue certificates for any site that is publically
+                        accessible, improving our sites security
+
+						DEMO!
+					</script>
+				</section>
+
+				<section data-markdown class="image-slide">
+					<script type="text/template">
+						## SSL gotchas
+						!["Basic CA trust model"](img/lelogo)
+						Note:
+						It's important that you configure ssl correctly
+						there are some configurations of ssl that can
+						be effectively the same as having no ssl at all
+
+						I can't give a proper rundown of the things you should be on the look out for
+						but the key things are to avoid any SSLv3 ciphers and use only TLS and above
+
+						note that for some organisations you may need older ciphers in place to support
+						those on older browsers
+
+						Demo ssl configuration generator https://mozilla.github.io/server-side-tls/ssl-config-generator/
+					</script>
+				</section>
+
+				<section data-markdown class="image-slide">
+					<script type="text/template">
+						## Continous Integration
+						!["Basic CA trust model"](img/lelogo)
+						Note:
+						Continuous integration is the name of a process, the idea is you run your
+						integration tests (of whatever sort) continously
+
+						in the usual case that means running your integration  suite on every single
+						hence the terms continous and integration
+
+						for moodle then these technologies would be phpunit and behat
+					</script>
+				</section>
+
+				<section data-markdown class="image-slide">
+					<script type="text/template">
+						## Why?
+						!["Basic CA trust model"](img/lelogo)
+						Note:
+						It's about having confidence in deploying your code
+
+						if you have a succesfully green board of unit tests on the latest commit
+						you can feel very comfortable about deploying that code in an automated
+						fashion
+
+						This in turn means you can deploy code often, because you have confidence that
+						it's unlikely to break the sites
+
+						in turn this leads down to further paths such as automated security updates and
+						automated deployments
+					</script>
+				</section>
+
+				<section data-markdown class="image-slide">
+					<script type="text/template">
+						## How
+						!["Basic CA trust model"](img/lelogo)
+						Note:
+						More software! In this case gocd, which is designed to make it aesy
+						to setup an automated set of actions to run in response to event (pipeline)
+
+						in our case, when an commit is made, setup a test environment in our openstack cloud
+						and then run the php unit tests against the codebase
+
+						We also have a further step that can fire our automated deployment script that will
+						deploy code automatically to production
+
+					</script>
+				</section>
+
+				<!-- Section title slide with big colour dot -->
+				<section data-markdown class="title-slide">
+					<script type="text/template">
+						### Title goes here <!-- .element: class="orange" -->
+					</script>
+				</section>
+
+				<!-- Slide with a large title-->
+				<section data-markdown>
+					<script type="text/template">
+					## Large title
+
+					Note:
+					This will only display in the notes window.
+					</script>
+				</section>
+
+				<!-- Large image slide -->
+				<section data-markdown class="image-slide">
+					<script type="text/template">
+						## Title
+						![placeholder image](img/800x400.gif "Placeholder image")
+					</script>
+				</section>
+
+				<!-- Slide with list items (list items are displayed at once) -->
+				<section data-markdown>
+					<script type="text/template">
+					### List title
+					* List item ![placeholder image](img/300x400.gif "Placeholder image") <!-- .element: class="img-right" -->
+					* List item
+					* List item
+					</script>
+				</section>
+
+				<!-- Slide with list items (fragmented list items) -->
+				<section data-markdown>
+					<script type="text/template">
+					### Fragmented list
+					* List item <!-- .element: class="fragment" -->
+					* List item <!-- .element: class="fragment" -->
+					* List item <!-- .element: class="fragment" -->
+					![placeholder image](img/500x200.gif "Placeholder image") <!-- .element: class="img-centered" -->
+					</script>
+				</section>
+
+				<!-- Slide with vertical slides underneath  -->
+				<section>
+
+					<!-- Horizontal slide (This is one the same level as slide above) -->
+					<section data-markdown class="title-slide banner-3">
+						<script type="text/template">
+						## Title (press down to see vertical slides) <!-- .element: class="yellow" -->
+						</script>
+					</section>
+
+					<!-- The following slides are vertical, use down arrow key to navigate -->
+					<!-- Centered paragraph  -->
+					<section data-markdown>
+						<script type="text/template">
+						### Paragraph
+						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris at scelerisque eros. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aliquam placerat posuere nibh vel dapibus.
+						</script>
+					</section>
+
+					<!-- Blockquote  -->
+					<section data-markdown>
+						<script type="text/template">
+						### Blockquote
+						> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris at scelerisque eros. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aliquam placerat posuere nibh vel dapibus.
+						</script>
+					</section>
+
+					<!-- Nested lists-->
+					<section data-markdown>
+						<script type="text/template">
+							### Nested lists
+							+ One
+							+ Two
+							+ Three
+								- Nested One
+								- Nested Two
+						</script>
+					</section>
+				</section>
+
+				<!-- Slide with code block -->
+				<section data-markdown>
+					<script type="text/template">
+						### Title
+						Some text
+
+							function linkify( selector ) {
+								if( supports3DTransforms ) {
+
+									var nodes = document.querySelectorAll( selector );
+
+									for( var i = 0, len = nodes.length; i < len; i++ ) {
+										var node = nodes[i];
+
+										if( !node.className ) {
+											node.className += ' roll';
+										}
+									}
+								}
+							}
+					</script>
+				</section>
+
+				<!-- Slide with full background image -->
+				<section data-markdown data-background="img/800x600.gif">
+					<script type="text/template">
+					### Image backgrounds
+					</script>
+				</section>
+
+				<!-- Slide with Catalyst slogan -->
+				<section data-markdown class="image-slide">
+					<script type="text/template">
+					![freedom to innovate](css/theme/images/freedom-to-innovate.svg "freedom to innovate") <!-- .element: class="cat-slogan-image" -->
+					</script>
+				</section>
+			</div>
+
+			<div class="footer">
+				<div class="scarf">
+					<div class="scarf-orange"></div>
+					<div class="scarf-yellow"></div>
+					<div class="scarf-blue"></div>
+					<div class="scarf-green"></div>
+				</div>
+				<div class="footer-inner">
+					<div>
+						<div class="catalyst-logo-footer">Catalyst</div>
+						<!-- NOTE: use only one of these. open-source-technologists is the standard -->
+						<div class="open-source-technologists">open source technologists</div>
+						<!-- <div class="freedom-to-innovate">freedom to innovate</div> -->
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
